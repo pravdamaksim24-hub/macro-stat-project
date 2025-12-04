@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Macro Stats Project Defense & Exam Prep</title>
+    <title>Macro Stats Project Prep</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -13,6 +13,7 @@
             --text: #1f2937;
             --correct: #10b981;
             --wrong: #ef4444;
+            --warning: #f59e0b;
         }
 
         body {
@@ -37,6 +38,31 @@
             margin: 20px;
         }
 
+        /* --- MODE SELECTION SCREEN --- */
+        #mode-screen { text-align: center; }
+        .mode-btn-container {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            grid-template-columns: 1fr 1fr;
+        }
+        .mode-btn {
+            padding: 2rem;
+            font-size: 1.2rem;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        .mode-btn:hover { transform: translateY(-3px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        .practice-mode { color: var(--primary); border-color: var(--primary); }
+        .practice-mode:hover { background-color: #eff6ff; }
+        .defense-mode { color: var(--warning); border-color: var(--warning); }
+        .defense-mode:hover { background-color: #fffbeb; }
+
+        /* --- QUIZ SCREEN --- */
         header {
             display: flex;
             justify-content: space-between;
@@ -101,6 +127,8 @@
         }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn:hover:not(:disabled) { background-color: var(--secondary); }
+        .btn-secondary { background-color: #6b7280; }
+        .btn-secondary:hover { background-color: #4b5563; }
 
         #explanation {
             margin-top: 15px;
@@ -113,13 +141,37 @@
         /* End Screen */
         #end-screen { text-align: center; display: none; }
         .final-score { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 2rem 0; }
+        
+        /* Utility */
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="container" id="quiz-container">
+<div class="container" id="mode-screen">
+    <h1>Macro Stats Project Prep</h1>
+    <p>Select your preparation mode:</p>
+    
+    <div class="mode-btn-container">
+        <button class="mode-btn practice-mode" onclick="startQuiz('practice')">
+            📚 Practice Quiz
+            <div style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; color: #555;">
+                Test your knowledge on course concepts, formulas, and general project facts.
+            </div>
+        </button>
+
+        <button class="mode-btn defense-mode" onclick="startQuiz('defense')">
+            🛡️ Defense Simulation
+            <div style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; color: #555;">
+                20 hard questions simulating a professor's critique. Focus on methodology, limitations, and deep interpretation.
+            </div>
+        </button>
+    </div>
+</div>
+
+<div class="container hidden" id="quiz-container">
     <header>
-        <h1>Macro Stats Project Defense</h1>
+        <h1 id="quiz-title">Quiz Mode</h1>
         <div class="stats">Score: <span id="score">0</span> / <span id="total">0</span></div>
     </header>
 
@@ -132,23 +184,25 @@
     </div>
 
     <div class="controls">
+        <button class="btn btn-secondary" onclick="location.reload()">Exit</button>
         <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
     </div>
 </div>
 
-<div class="container" id="end-screen">
-    <h1>Quiz Completed!</h1>
+<div class="container hidden" id="end-screen">
+    <h1 id="end-title">Quiz Completed!</h1>
     <div class="final-score" id="final-score">0%</div>
-    <p>Great preparation for the project defense!</p>
-    <button class="btn" onclick="location.reload()">Restart Quiz</button>
+    <p id="end-message">Great job!</p>
+    <button class="btn" onclick="location.reload()">Return to Menu</button>
 </div>
 
 <script>
-    // --- DATASET: 100+ Questions derived from your PDFs ---
-    const questionData = [
-        // --- SECTION 1: PROJECT SPECIFICS (Your Presentation) ---
+    // ==========================================
+    // DATASET 1: PRACTICE QUESTIONS (General)
+    // ==========================================
+    const practiceQuestions = [
         {
-            category: "Project Defense",
+            category: "Project Basics",
             question: "What is the primary Research Question of your project?",
             options: [
                 "How does unemployment affect inflation in the EU?",
@@ -157,94 +211,10 @@
                 "How did the 2008 financial crisis impact Eastern Europe?"
             ],
             correct: 1,
-            explanation: "Slide 11 explicitly states the research question focuses on GDP/Income variation and spatial clustering."
+            [cite_start]explanation: "Slide 11 explicitly states the research question focuses on GDP/Income variation and spatial clustering[cite: 11]."
         },
         {
-            category: "Project Methodology",
-            question: "Why did you choose NUTS-1 regions instead of NUTS-2 or NUTS-3?",
-            options: [
-                "NUTS-1 offers the most detailed local view available.",
-                "There was no data available for NUTS-2.",
-                "NUTS-1 allows for a macro-regional comparison, smoothing out local noise while showing broad European trends.",
-                "NUTS-2 regions are not defined for Germany or France."
-            ],
-            correct: 2,
-            explanation: "Defense Tip: While NUTS-2 is more detailed, NUTS-1 is better for observing 'Macro-Regional' disparities (West vs East) without getting lost in too much local detail."
-        },
-        {
-            category: "Project Methodology",
-            question: "Why did you use Queen contiguity weights instead of Rook?",
-            options: [
-                "Queen contiguity captures diagonal neighbors (common vertices), reflecting broader economic connections.",
-                "Rook contiguity is not supported by GeoDa.",
-                "Queen contiguity only considers common borders, making the calculation faster.",
-                "We flipped a coin."
-            ],
-            correct: 0,
-            explanation: "Rook shares borders only. Queen shares borders and corners (vertices), which is often more realistic for economic spillover."
-        },
-        {
-            category: "Project Findings",
-            question: "What was the main trend observed in your Global Moran's I analysis for GDP between 2014 and 2022?",
-            options: [
-                "Clustering increased significantly, showing divergence.",
-                "Clustering decreased slightly (0.33 to 0.22), suggesting a mild convergence trend.",
-                "There was no spatial autocorrelation in either year.",
-                "The values became negative, indicating perfect dispersion."
-            ],
-            correct: 1,
-            explanation: "Slide 61: GDP concentration decreased slightly, resulting in a mild convergence trend."
-        },
-        {
-            category: "Project Data",
-            question: "Why did you analyze Household Income in PPS (Purchasing Power Standards) rather than just Euros?",
-            options: [
-                "PPS is easier to calculate in Excel.",
-                "Euros are not used in all EU countries.",
-                "PPS eliminates price level differences, allowing for a real comparison of standard of living.",
-                "PPS creates larger numbers which look better on graphs."
-            ],
-            correct: 2,
-            explanation: "Defense Tip: Comparing nominal Euros is misleading because 100 Euros buys more in Romania than in Germany. PPS adjusts for this."
-        },
-        {
-            category: "Project Findings",
-            question: "Based on your LISA Cluster Map, where are the 'High-High' clusters concentrated?",
-            options: [
-                "Eastern Europe (Romania, Bulgaria)",
-                "Southern Europe (Spain, Portugal)",
-                "The Economic Core: Germany, Belgium, Austria",
-                "Northern UK and Ireland"
-            ],
-            correct: 2,
-            explanation: "Slide 76: High-High clusters (core) are in Germany and Belgium."
-        },
-        {
-            category: "Project Findings",
-            question: "What does the Bivariate Moran's I (0.445 in 2022) between GDP and Income indicate?",
-            options: [
-                "Regions with high GDP tend to be surrounded by regions with low income.",
-                "There is no relationship between productivity and household welfare.",
-                "Strong evidence that regions with high GDP cluster with regions of high household income (spillover).",
-                "It indicates a negative spatial autocorrelation."
-            ],
-            correct: 2,
-            explanation: "Slide 81: Regions with high GDP tend to cluster with regions with high income."
-        },
-        {
-            category: "Project Critique",
-            question: "A professor asks: 'Why did you not use NUTS-2 data?' What is a valid limitation of your NUTS-1 approach?",
-            options: [
-                "NUTS-1 data is fake.",
-                "NUTS-1 scale hides significant internal country differences (e.g., capitals vs rural areas).",
-                "NUTS-1 regions are too small to see patterns.",
-                "There are no limitations."
-            ],
-            correct: 1,
-            explanation: "Slide 107: A key limitation is that NUTS-1 hides internal country disparities (e.g., Bucharest vs rest of Romania)."
-        },
-        {
-            category: "Project Methodology",
+            category: "Methodology",
             question: "What software did you use for the Spatial Analysis?",
             options: [
                 "SPSS",
@@ -253,7 +223,7 @@
                 "Python only"
             ],
             correct: 1,
-            explanation: "Slide 22 and 115 confirm GeoDa was used for spatial analysis."
+            [cite_start]explanation: "Slide 22 confirms GeoDa was used for spatial analysis[cite: 22]."
         },
         {
             category: "Project Data",
@@ -265,10 +235,8 @@
                 "OpenStreetMap"
             ],
             correct: 1,
-            explanation: "Slide 23/113: Eurostat – Regional Database / GISCO."
+            [cite_start]explanation: "Slide 23: Eurostat – Regional Database / GISCO[cite: 23]."
         },
-        
-        // --- SECTION 2: SPATIAL ANALYSIS THEORY (Lectures) ---
         {
             category: "Spatial Theory",
             question: "What does Tobler's First Law of Geography state?",
@@ -279,7 +247,7 @@
                 "Migration always flows from East to West."
             ],
             correct: 1,
-            explanation: "Lecture 4, Slide 9."
+            [cite_start]explanation: "Lecture 4, Slide 9[cite: 1041]."
         },
         {
             category: "Spatial Theory",
@@ -291,46 +259,8 @@
                 "Zero correlation."
             ],
             correct: 2,
-            explanation: "Lecture 4: -1 indicates perfect negative spatial autocorrelation (dissimilar values are neighbors)."
+            [cite_start]explanation: "Lecture 4: -1 indicates perfect negative spatial autocorrelation[cite: 1262]."
         },
-        {
-            category: "Spatial Theory",
-            question: "In a Moran Scatter Plot, what does Quadrant IV (High-Low) represent?",
-            options: [
-                "High value surrounded by High values.",
-                "Low value surrounded by Low values.",
-                "High value surrounded by Low values (Spatial Outlier).",
-                "Low value surrounded by High values."
-            ],
-            correct: 2,
-            explanation: "Lecture 4, Slide 29: Quadrant IV is High values surrounded by Low values."
-        },
-        {
-            category: "Spatial Theory",
-            question: "What is the difference between Global and Local Moran's I?",
-            options: [
-                "Global gives one value for the whole dataset; Local identifies specific clusters (hotspots) on the map.",
-                "Global is for the world; Local is for Europe.",
-                "Local is more accurate than Global.",
-                "They are the same thing."
-            ],
-            correct: 0,
-            explanation: "Lecture 4: Global summarizes the whole map into one number. Local (LISA) paints the map to show where the clusters are."
-        },
-        {
-            category: "Spatial Theory",
-            question: "If the Pseudo p-value in GeoDa is 0.001, what do you conclude?",
-            options: [
-                "The result is not statistically significant.",
-                "We reject the null hypothesis; the spatial distribution is NOT random (it is significant).",
-                "The data is incorrect.",
-                "We accept the null hypothesis."
-            ],
-            correct: 1,
-            explanation: "Lecture 4, Slide 33: p < 0.05 implies significance."
-        },
-
-        // --- SECTION 3: NATIONAL ACCOUNTS & GDP (Lecture 5 & 6) ---
         {
             category: "National Accounts",
             question: "Which of the following is NOT a method for computing GDP?",
@@ -341,46 +271,8 @@
                 "The Inflation Approach"
             ],
             correct: 3,
-            explanation: "Lecture 5, Slide 9: The three methods are Output, Income, and Expenditure."
+            [cite_start]explanation: "Lecture 5, Slide 9: The three methods are Output, Income, and Expenditure[cite: 578]."
         },
-        {
-            category: "National Accounts",
-            question: "What is the formula for GDP using the Expenditure Approach?",
-            options: [
-                "GDP = C + I + G + (Exports - Imports)",
-                "GDP = Wages + Rent + Interest + Profit",
-                "GDP = Output - Intermediate Consumption",
-                "GDP = C + I - G"
-            ],
-            correct: 0,
-            explanation: "Lecture 5, Slide 10: C (Consumption) + I (Investment) + G (Gov Spending) + NX (Net Exports)."
-        },
-        {
-            category: "National Accounts",
-            question: "What is the difference between Nominal and Real GDP?",
-            options: [
-                "Nominal is calculated in US Dollars; Real is in Euros.",
-                "Nominal uses current prices; Real uses constant prices (adjusted for inflation).",
-                "Nominal includes the black market; Real does not.",
-                "Real GDP is always higher than Nominal."
-            ],
-            correct: 1,
-            explanation: "Lecture 7, Slide 7: Nominal = current prices. Real = constant prices (uses a deflator)."
-        },
-        {
-            category: "National Accounts",
-            question: "What is the 'GDP Deflator'?",
-            options: [
-                "The rate at which GDP falls during a recession.",
-                "A price index covering all domestically produced goods/services, used to convert Nominal GDP to Real GDP.",
-                "The Consumer Price Index (CPI).",
-                "The exchange rate between Euro and Ron."
-            ],
-            correct: 1,
-            explanation: "Lecture 7, Slide 6: GDP Deflator = (Nominal/Real) * 100."
-        },
-
-        // --- SECTION 4: LABOR & POPULATION (Lecture 2 & 3) ---
         {
             category: "Demographics",
             question: "What does the 'Crude Birth Rate' measure?",
@@ -391,7 +283,7 @@
                 "The percentage of the population that is pregnant."
             ],
             correct: 1,
-            explanation: "Lecture 3, Slide 7: (Live births / Population) * 1,000."
+            [cite_start]explanation: "Lecture 3, Slide 7: (Live births / Population) * 1,000[cite: 148]."
         },
         {
             category: "Labor Stats",
@@ -403,34 +295,20 @@
                 "Someone working part-time who wants full-time work."
             ],
             correct: 1,
-            explanation: "Lecture 3, Slide 39: The 3 conditions: Without work, Available, Actively seeking."
+            [cite_start]explanation: "Lecture 3, Slide 39: The 3 conditions: Without work, Available, Actively seeking[cite: 336]."
         },
         {
-            category: "Labor Stats",
-            question: "How is the 'Activity Rate' calculated?",
+            category: "Project Findings",
+            question: "Based on your LISA Cluster Map, where are the 'High-High' clusters concentrated?",
             options: [
-                "(Employed / Total Population) * 100",
-                "(Active Population / Working Age Population) * 100",
-                "(Unemployed / Active Population) * 100",
-                "(Inactive / Active) * 100"
+                "Eastern Europe (Romania, Bulgaria)",
+                "Southern Europe (Spain, Portugal)",
+                "The Economic Core: Germany, Belgium, Austria",
+                "Northern UK and Ireland"
             ],
-            correct: 1,
-            explanation: "Lecture 3, Slide 31: Ratio between active population and working age population."
+            correct: 2,
+            [cite_start]explanation: "Slide 76: High-High clusters (core) are in Germany and Belgium[cite: 76]."
         },
-        {
-            category: "Demographics",
-            question: "What characterizes a 'Stationary Population'?",
-            options: [
-                "High birth rate and low death rate.",
-                "Natural Growth is zero (Births = Deaths).",
-                "High migration rate.",
-                "Population pyramid looks like a triangle."
-            ],
-            correct: 1,
-            explanation: "Lecture 2, Slide 36: When Natural Growth is zero."
-        },
-
-        // --- SECTION 5: INDICES & INFLATION (Lecture 6 & 7) ---
         {
             category: "Indices",
             question: "Which index uses Base Period weights?",
@@ -441,161 +319,266 @@
                 "Bradford Index"
             ],
             correct: 1,
-            explanation: "Lecture 6, Slide 16: Laspeyres uses base period weights (q0). Paasche uses current period (q1)."
-        },
-        {
-            category: "Inflation",
-            question: "If the CPI is 115.25 (base 100), what is the inflation rate?",
-            options: [
-                "115.25%",
-                "15.25%",
-                "1.15%",
-                "Cannot be determined."
-            ],
-            correct: 1,
-            explanation: "Lecture 7, Slide 17: IR = (CPI - 1) * 100 -> (1.1525 - 1)*100 = 15.25%."
-        },
-        {
-            category: "Inflation",
-            question: "What is 'Galloping Inflation'?",
-            options: [
-                "1-3% per year.",
-                "3-10% per year.",
-                "10-50% per year.",
-                "Over 50% per month."
-            ],
-            correct: 2,
-            explanation: "Lecture 7, Slide 10: Galloping is high inflation (10-50%). Hyperinflation is >50%/month."
-        },
+            [cite_start]explanation: "Lecture 6, Slide 16: Laspeyres uses base period weights (q0)[cite: 462]."
+        }
+    ];
 
-        // --- HARD DEFENSE QUESTIONS (Strategy & Data Choice) ---
+    // ==========================================
+    // DATASET 2: DEFENSE QUESTIONS (Hard/Critical)
+    // ==========================================
+    const defenseQuestions = [
         {
-            category: "Defense Strategy",
-            question: "Why might your Moran's I results differ if you used 'Distance-based' weights instead of 'Queen' weights?",
+            category: "Methodology Critique",
+            question: "Your project uses Queen contiguity. If you had used 'Inverse Distance' weights instead, how might your results regarding the 'East-West gradient' change?",
             options: [
-                "They wouldn't differ.",
-                "Distance weights might connect regions across water or unconnected by borders, potentially changing cluster shapes.",
-                "Distance weights are illegal in Eurostat methodologies.",
+                "The results would be identical because weight matrices don't affect Moran's I.",
+                "Distance weights might connect regions across water (e.g., Scandinavia to mainland) or unconnected borders, potentially revealing stronger core-periphery links than pure adjacency.",
+                "Distance weights are illegal in NUTS-1 analysis.",
                 "GeoDa cannot calculate distance weights."
             ],
             correct: 1,
-            explanation: "Project Limitation (Slide 109): Using alternative weights changes the definition of 'neighbor', which affects the calculation of spatial lag."
+            explanation: "Queen only looks at physical neighbors. [cite_start]Distance weights capture economic influence that 'jumps' borders (e.g., trade routes), which is a key limitation noted in slide 109[cite: 108]."
         },
         {
-            category: "Defense Strategy",
-            question: "You found a West-East gradient. Did you check for sigma-convergence (reduction of dispersion over time)?",
+            category: "Data Limitations",
+            question: "You identified a limitation regarding the NUTS-1 scale. Specifically, why is NUTS-1 potentially misleading for a country like Romania or France?",
             options: [
-                "No, we only looked at maps.",
-                "Yes, the Standard Deviation of GDP likely decreased, and the Moran's I decreased from 0.33 to 0.22, suggesting mild convergence.",
-                "West-East gradient means no convergence.",
-                "We don't know what convergence is."
+                "NUTS-1 data is often missing.",
+                "NUTS-1 averages out extreme internal disparities (e.g., wealthy Bucharest vs. poor rural RO2), making the whole country look 'average'.",
+                "NUTS-1 regions are too small to see global trends.",
+                "NUTS-1 regions do not align with national borders."
             ],
             correct: 1,
-            explanation: "Slide 61 interpretation: GDP concentration decreased, implying mild convergence."
+            explanation: "Slide 107: 'NUTS-1 scale hides internal country differences'. [cite_start]Capital cities often have much higher GDP than the national average[cite: 107]."
         },
         {
-            category: "Defense Strategy",
-            question: "Why is 'Population' a variable in your dataset if you are studying Economic Disparities?",
+            category: "Economic Interpretation",
+            question: "You found that GDP is LESS spatially clustered than Household Income. What is the economic implication of this?",
             options: [
-                "To calculate per capita indicators (GDP per capita).",
-                "It makes the map look fuller.",
-                "Population is the same as GDP.",
-                "Eurostat required it."
+                "Productivity (GDP) is driven by specific industrial hubs/resources, while Income spreads out more evenly due to national welfare/social transfers.",
+                "Income data is just less accurate than GDP data.",
+                "It means the Moran's I for GDP was calculated incorrectly.",
+                "It means rich regions are becoming poorer."
             ],
             correct: 0,
-            explanation: "Slide 45: GDP per capita = GDP / Population. You need population to normalize economic data."
+            explanation: "Slide 100: 'GDP is less spatially clustered than income'. [cite_start]Productivity shifts faster, but income (welfare) is smoothed by policy or remains sticky[cite: 100]."
         },
         {
-            category: "Defense Strategy",
-            question: "What defines the 'Economic Core' found in your project?",
+            category: "Statistical Validity",
+            question: "In your Global Moran's I analysis for 2014, the value was 0.330 (p=0.002). A professor argues this is a 'weak' correlation. How do you defend it?",
             options: [
-                "High GDP, Low Income.",
-                "High-High spatial clusters located in Germany, Austria, and Benelux.",
-                "Peripheral regions in Eastern Europe.",
-                "Regions with high tourism."
+                "Admit it is weak and the project failed.",
+                "Argue that in spatial statistics, unlike Pearson correlation, a value of 0.33 is actually a moderate-to-strong indication of clustering, and the p-value confirms it is not random.",
+                "Say that 0.33 is close to 1.",
+                "Blame the data source."
             ],
             correct: 1,
-            explanation: "Slide 57/76: The core is identified as Germany, Austria, Benelux, N. Italy."
+            explanation: "Spatial autocorrelation values are often lower than standard correlations. [cite_start]0.33 with p=0.002 is statistically significant clustering[cite: 66, 68]."
         },
         {
-            category: "Project Methodology",
-            question: "What does the 'Lagged' variable mean in a Moran Scatter Plot (e.g., lagged GDP)?",
+            category: "Bivariate Analysis",
+            question: "Your Bivariate Moran's I (GDP vs Income) is 0.44. Does this prove that high GDP *causes* high Income in neighboring regions?",
             options: [
-                "GDP from the previous year.",
-                "The average GDP of the neighboring regions.",
-                "The GDP adjusted for inflation.",
-                "The error term."
+                "Yes, correlation proves causation.",
+                "No, it proves that high Income causes high GDP.",
+                "No, it indicates spatial association (clustering), but not necessarily causality; variables like government policy or infrastructure could drive both.",
+                "It indicates a negative relationship."
             ],
-            correct: 1,
-            explanation: "Lecture 4 / Project Slide 60: The Y-axis is the 'Spatial Lag', which is the weighted average of neighbors' values."
+            correct: 2,
+            explanation: "Moran's I measures association/clustering, not causality. [cite_start]Refer to Slide 82 regarding 'spillover effects' but be careful with the word 'cause'[cite: 82]."
         },
         {
-            category: "General Stats",
-            question: "Who founded the first statistical office in Romania?",
+            category: "Map Interpretation",
+            question: "On your LISA Cluster map, you have 'High-Low' outliers (HL). What does a High-Low region represent in reality?",
             options: [
-                "Nicolae Ceausescu",
-                "Alexandru Ioan Cuza (along with Dionisie Pop Marțian)",
-                "King Carol I",
-                "The European Union"
+                "A poor region surrounded by rich neighbors.",
+                "A rich economic hub (island of wealth) surrounded by poorer, less developed regions (e.g., a capital city in a developing country).",
+                "A region with high inflation but low growth.",
+                "A data error."
             ],
             correct: 1,
-            explanation: "Lecture 1, Slide 11."
+            explanation: "Lecture 4, Slide 29/Project Slide 78: High-Low means the region itself is High, but neighbors are Low. [cite_start]This often happens in transition zones[cite: 78]."
         },
         {
-            category: "General Stats",
-            question: "Where can you find official Romanian macroeconomic time series data?",
+            category: "Data Choice",
+            question: "Why did you choose PPS (Purchasing Power Standard) over Nominal Euros for your Income variable?",
             options: [
-                "Wikipedia",
-                "Tempo Online (INS)",
-                "Facebook",
-                "Only in printed books"
+                "Nominal Euros look smaller on the map.",
+                "PPS adjusts for price level differences, allowing us to compare the actual 'standard of living' between a cheap country (Romania) and an expensive one (Germany).",
+                "PPS is the only data Eurostat provides.",
+                "We flipped a coin."
             ],
             correct: 1,
-            explanation: "Lecture 1, Slide 21."
+            [cite_start]explanation: "Lecture 6, Slide 18: PPS eliminates the effect of price level differences, making it the correct choice for welfare comparisons[cite: 635]."
         },
         {
-            category: "Project Methodology",
-            question: "What does 'LISA' stand for in your Cluster Map analysis?",
+            category: "Trend Analysis",
+            question: "You claim a 'slight convergence' between 2014 and 2022 because Moran's I dropped. Is it possible for Moran's I to drop WITHOUT economic convergence?",
             options: [
-                "Linear International Statistical Analysis",
-                "Local Indicators of Spatial Association",
-                "Low Income Spatial Area",
-                "Least Important Statistical Area"
+                "No, they are perfectly linked.",
+                "Yes, if the rich regions became random (dispersed) but stayed rich, Moran's I would drop, but the gap between rich and poor (inequality) might remain the same.",
+                "Yes, but only if inflation is high.",
+                "No, Moran's I measures the magnitude of GDP."
             ],
             correct: 1,
-            explanation: "Standard term in Spatial Analysis (Lecture 4, Project Slide 74)."
+            explanation: "Critical thinking: Moran's I measures *clustering*. Convergence measures *inequality gap*. [cite_start]While related, less clustering doesn't automatically guarantee the poor caught up to the rich; it just means the rich aren't as clumped together[cite: 61]."
         },
         {
-            category: "Project Findings",
-            question: "In your Bivariate analysis, you found a correlation of 0.44. Is this considered strong?",
+            category: "Methodology",
+            question: "Why did you calculate 'Growth Rate' as (2022/2014) - 1? Why not just compare the raw numbers?",
             options: [
-                "No, it's very weak.",
-                "Yes, in spatial statistics, 0.44 indicates a substantial positive association.",
-                "It indicates a negative association.",
-                "It is exactly zero."
+                "Raw numbers don't account for population size.",
+                "Growth rate normalizes the starting point, allowing us to see which regions are catching up (dynamic view) vs just who is rich (static view).",
+                "It was required by the professor.",
+                "Excel couldn't handle the raw numbers."
             ],
             correct: 1,
-            explanation: "Project Slide 93/95 describes this as 'Strong spatial association'."
+            [cite_start]explanation: "Slide 47: Growth rate allows dynamic comparison of progress over time, essential for checking convergence[cite: 47]."
         },
         {
-            category: "Defense Strategy",
-            question: "A question on data quality: Why might GDP be high but Household Income low in a region (e.g., Ireland or Bucharest)?",
+            category: "Policy Implications",
+            question: "Your project concludes that 'disparities remain significant'. If you were an EU policy advisor, based on your Low-Low clusters, where would you invest Cohesion Funds?",
             options: [
-                "Accounting errors.",
-                "High corporate profits (GDP) that are repatriated abroad or not distributed as wages (Income).",
-                "People are hiding their money.",
-                "The software is broken."
+                "Germany and Benelux (High-High clusters).",
+                "Eastern and Southeastern Europe (the Low-Low periphery).",
+                "Scandinavia.",
+                "The UK."
             ],
             correct: 1,
-            explanation: "Project Slide 100: 'GDP is less spatially clustered than income'. High GDP doesn't always equal high local welfare if profits leave the region (e.g., multinationals in Ireland)."
+            [cite_start]explanation: "Slide 77 identifies Eastern/Southeastern Europe as the Low-Low periphery, which is the target for Cohesion Policy mentioned in Slide 14[cite: 77]."
+        },
+        {
+            category: "Anomalies",
+            question: "What might explain the 'Not Significant' (grey) areas on your LISA map?",
+            options: [
+                "There is no data for those regions.",
+                "Those regions have values that do not exhibit a statistically significant spatial pattern (random distribution) compared to their neighbors.",
+                "Those regions have 0 GDP.",
+                "The software crashed."
+            ],
+            correct: 1,
+            [cite_start]explanation: "Lecture 4: 'Not Significant' means the spatial randomization test (999 permutations) did not find a pattern different from randomness[cite: 1374]."
+        },
+        {
+            category: "Alternative Metrics",
+            question: "You used GDP per Capita. Why is GVA (Gross Value Added) per worker sometimes a better measure for regional analysis?",
+            options: [
+                "It isn't.",
+                "GVA per worker measures pure productivity without the distortion of taxes/subsidies and unrelated population (children/elderly).",
+                "GVA is harder to calculate.",
+                "GDP per capita excludes commuters."
+            ],
+            correct: 1,
+            explanation: "Lecture 5, Slide 11/20: GVA is often used as a proxy for productivity. [cite_start]GDP per capita includes non-working population, which dilutes the productivity metric[cite: 603]."
+        },
+        {
+            category: "Inflation Impact",
+            question: "Your study covers 2014-2022. This period includes high inflation post-COVID. If your data was in 'Current Prices' (Nominal), how does this affect your growth conclusions?",
+            options: [
+                "It doesn't affect anything.",
+                "Nominal growth might look huge solely due to inflation, masking the fact that real production might have stagnated.",
+                "Inflation makes the growth look smaller.",
+                "Nominal data is always better than Real data."
+            ],
+            correct: 1,
+            explanation: "Lecture 6, Slide 17/19: Current prices are influenced by inflation. [cite_start]To see real economic convergence, you must account for price changes[cite: 623]."
+        },
+        {
+            category: "Spatial Weights",
+            question: "In GeoDa, what does the 'Order of Contiguity' (1st order vs 2nd order) change?",
+            options: [
+                "Nothing.",
+                "1st order considers immediate neighbors. 2nd order considers 'neighbors of neighbors'. Using 2nd order might reveal wider regional trends.",
+                "2nd order is only for NUTS-2.",
+                "1st order is for GDP, 2nd order is for Income."
+            ],
+            correct: 1,
+            explanation: "Lecture 4: Neighbors can be defined by hierarchy. Higher orders capture broader spillover effects."
+        },
+        {
+            category: "Outliers",
+            question: "Did you check for global outliers in your dataset (e.g., Luxembourg or Ireland) before running Moran's I? Why does this matter?",
+            options: [
+                "No, outliers don't matter.",
+                "Yes, because an extreme outlier (like Luxembourg's inflated GDP) can skew the mean and artificially inflate/deflate the Moran's I coefficient.",
+                "We deleted all outliers.",
+                "Outliers make the map look prettier."
+            ],
+            correct: 1,
+            explanation: "Standard statistical practice. [cite_start]Lecture 4 mentions Box Maps are used specifically to identify spatial outliers[cite: 1098]."
+        },
+        {
+            category: "Correlation vs Autocorrelation",
+            question: "What is the fundamental difference between Pearson's Correlation (r) and Moran's I?",
+            options: [
+                "Pearson measures relationship between two variables (X and Y). Moran's I measures relationship of a variable with ITSELF across space (X vs Lag-X).",
+                "They are the same.",
+                "Pearson is for maps, Moran is for charts.",
+                "Moran's I can be greater than 1."
+            ],
+            correct: 0,
+            [cite_start]explanation: "Lecture 4, Slide 12: Autocorrelation is correlation between values of the same variable (bi-directional among observations)[cite: 1058]."
+        },
+        {
+            category: "Significance Testing",
+            question: "Your LISA map shows clusters with p=0.05 and p=0.01. Which clusters are more reliable?",
+            options: [
+                "p=0.05 (Darker blue/red)",
+                "p=0.01 (Lighter blue/red)",
+                "The ones with p=0.01 are more statistically significant (less likely to be random noise) than p=0.05.",
+                "Significance doesn't matter in geography."
+            ],
+            correct: 2,
+            [cite_start]explanation: "Lecture 4, Slide 40: Lower p-values indicate higher statistical significance[cite: 1374]."
+        },
+        {
+            category: "Cross-Border Issues",
+            question: "Your map shows 'transition zones' near borders. Why are cross-border regions often HL or LH outliers?",
+            options: [
+                "Because borders stop economic interaction.",
+                "Because of different national tax regimes, labor laws, or development levels colliding (e.g., West Germany vs East Germany/Poland border).",
+                "GeoDa cannot handle borders.",
+                "It is a glitch in the shapefile."
+            ],
+            correct: 1,
+            [cite_start]explanation: "Project Slide 78: 'outliers near borders -> transition/disparity zones'[cite: 78]."
+        },
+        {
+            category: "Dataset Selection",
+            question: "You used 2014 and 2022. Why exclude the COVID years (2020-2021)?",
+            options: [
+                "We forgot them.",
+                "2020-2021 data represents an external shock (pandemic) that creates temporary anomalies, potentially obscuring the long-term structural trends we wanted to analyze.",
+                "There was no data for 2020.",
+                "2022 is the only year that matters."
+            ],
+            correct: 1,
+            explanation: "Defense Strategy: Excluding shock years is a valid methodological choice to analyze structural convergence rather than crisis management."
+        },
+        {
+            category: "Conclusion Defense",
+            question: "You conclude that 'Productivity shifts faster than household welfare'. How does your data support this?",
+            options: [
+                "It doesn't.",
+                "Moran's I for GDP (0.33/0.22) is lower/changed more than Income (0.53/0.44). Income clusters are 'stickier' and change less, implying welfare is harder to shift than raw output.",
+                "GDP is higher than Income.",
+                "We just guessed."
+            ],
+            correct: 1,
+            [cite_start]explanation: "Slide 100: 'GDP is less spatially clustered than income... productivity shifts faster than household welfare'[cite: 100]."
         }
     ];
 
     // --- QUIZ LOGIC ---
+    let currentQuestions = [];
     let currentQuestionIndex = 0;
     let score = 0;
-    let shuffledQuestions = [];
 
+    const modeScreen = document.getElementById("mode-screen");
+    const quizContainer = document.getElementById("quiz-container");
+    const endScreen = document.getElementById("end-screen");
+
+    const quizTitle = document.getElementById("quiz-title");
     const questionEl = document.getElementById("question");
     const categoryEl = document.getElementById("category");
     const optionsEl = document.getElementById("options");
@@ -603,23 +586,35 @@
     const scoreEl = document.getElementById("score");
     const totalEl = document.getElementById("total");
     const explanationEl = document.getElementById("explanation");
-    const quizContainer = document.getElementById("quiz-container");
-    const endScreen = document.getElementById("end-screen");
     const finalScoreEl = document.getElementById("final-score");
+    const endMessage = document.getElementById("end-message");
 
-    function startQuiz() {
-        // Shuffle the data array to make it random every time
-        shuffledQuestions = questionData.sort(() => Math.random() - 0.5);
+    function startQuiz(mode) {
+        modeScreen.classList.add("hidden");
+        quizContainer.classList.remove("hidden");
+
+        if (mode === 'practice') {
+            quizTitle.innerText = "Practice Quiz";
+            quizTitle.style.color = "var(--primary)";
+            // Shuffle and pick all practice questions
+            currentQuestions = practiceQuestions.sort(() => Math.random() - 0.5);
+        } else {
+            quizTitle.innerText = "🛡️ Defense Simulation";
+            quizTitle.style.color = "var(--warning)";
+            // Use defense questions
+            currentQuestions = defenseQuestions.sort(() => Math.random() - 0.5);
+        }
+
         currentQuestionIndex = 0;
         score = 0;
-        totalEl.textContent = shuffledQuestions.length;
+        totalEl.textContent = currentQuestions.length;
         scoreEl.textContent = "0";
         showQuestion();
     }
 
     function showQuestion() {
         resetState();
-        const currentQuestion = shuffledQuestions[currentQuestionIndex];
+        const currentQuestion = currentQuestions[currentQuestionIndex];
         
         questionEl.textContent = `${currentQuestionIndex + 1}. ${currentQuestion.question}`;
         categoryEl.textContent = currentQuestion.category;
@@ -670,7 +665,7 @@
 
     function nextQuestion() {
         currentQuestionIndex++;
-        if (currentQuestionIndex < shuffledQuestions.length) {
+        if (currentQuestionIndex < currentQuestions.length) {
             showQuestion();
         } else {
             showResults();
@@ -678,14 +673,22 @@
     }
 
     function showResults() {
-        quizContainer.style.display = "none";
-        endScreen.style.display = "block";
-        const percentage = Math.round((score / shuffledQuestions.length) * 100);
+        quizContainer.classList.add("hidden");
+        endScreen.classList.remove("hidden");
+        const percentage = Math.round((score / currentQuestions.length) * 100);
         finalScoreEl.textContent = `${percentage}%`;
-    }
 
-    // Initialize
-    startQuiz();
+        if(percentage >= 80) {
+            endMessage.innerText = "Excellent! You are ready for the presentation.";
+            endMessage.style.color = "var(--correct)";
+        } else if (percentage >= 50) {
+            endMessage.innerText = "Good job, but review the explanations for the ones you missed.";
+            endMessage.style.color = "var(--warning)";
+        } else {
+            endMessage.innerText = "Keep studying! Review the lectures and project methodology.";
+            endMessage.style.color = "var(--wrong)";
+        }
+    }
 
 </script>
 </body>

@@ -153,17 +153,17 @@
     <p>Select your preparation mode:</p>
     
     <div class="mode-btn-container">
-        <button class="mode-btn practice-mode" onclick="startQuiz('practice')">
+        <button class="mode-btn practice-mode" id="btn-practice" onclick="startQuiz('practice')">
             📚 Practice Quiz
             <div style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; color: #555;">
                 Test your knowledge on course concepts, formulas, and general project facts.
             </div>
         </button>
 
-        <button class="mode-btn defense-mode" onclick="startQuiz('defense')">
+        <button class="mode-btn defense-mode" id="btn-defense" onclick="startQuiz('defense')">
             🛡️ Defense Simulation
             <div style="font-size: 0.9rem; font-weight: normal; margin-top: 5px; color: #555;">
-                20 hard questions simulating a professor's critique. Focus on methodology, limitations, and deep interpretation.
+                Hard questions simulating a professor's critique. Focus on methodology and limitations.
             </div>
         </button>
     </div>
@@ -211,7 +211,7 @@
                 "How did the 2008 financial crisis impact Eastern Europe?"
             ],
             correct: 1,
-            [cite_start]explanation: "Slide 11 explicitly states the research question focuses on GDP/Income variation and spatial clustering[cite: 11]."
+            explanation: "Slide 11 explicitly states the research question focuses on GDP/Income variation and spatial clustering."
         },
         {
             category: "Methodology",
@@ -223,7 +223,7 @@
                 "Python only"
             ],
             correct: 1,
-            [cite_start]explanation: "Slide 22 confirms GeoDa was used for spatial analysis[cite: 22]."
+            explanation: "Slide 22 confirms GeoDa was used for spatial analysis."
         },
         {
             category: "Project Data",
@@ -235,7 +235,7 @@
                 "OpenStreetMap"
             ],
             correct: 1,
-            [cite_start]explanation: "Slide 23: Eurostat – Regional Database / GISCO[cite: 23]."
+            explanation: "Slide 23: Eurostat – Regional Database / GISCO."
         },
         {
             category: "Spatial Theory",
@@ -247,7 +247,7 @@
                 "Migration always flows from East to West."
             ],
             correct: 1,
-            [cite_start]explanation: "Lecture 4, Slide 9[cite: 1041]."
+            explanation: "Lecture 4, Slide 9."
         },
         {
             category: "Spatial Theory",
@@ -259,7 +259,7 @@
                 "Zero correlation."
             ],
             correct: 2,
-            [cite_start]explanation: "Lecture 4: -1 indicates perfect negative spatial autocorrelation[cite: 1262]."
+            explanation: "Lecture 4: -1 indicates perfect negative spatial autocorrelation."
         },
         {
             category: "National Accounts",
@@ -271,7 +271,7 @@
                 "The Inflation Approach"
             ],
             correct: 3,
-            [cite_start]explanation: "Lecture 5, Slide 9: The three methods are Output, Income, and Expenditure[cite: 578]."
+            explanation: "Lecture 5, Slide 9: The three methods are Output, Income, and Expenditure."
         },
         {
             category: "Demographics",
@@ -283,7 +283,7 @@
                 "The percentage of the population that is pregnant."
             ],
             correct: 1,
-            [cite_start]explanation: "Lecture 3, Slide 7: (Live births / Population) * 1,000[cite: 148]."
+            explanation: "Lecture 3, Slide 7: (Live births / Population) * 1,000."
         },
         {
             category: "Labor Stats",
@@ -295,7 +295,7 @@
                 "Someone working part-time who wants full-time work."
             ],
             correct: 1,
-            [cite_start]explanation: "Lecture 3, Slide 39: The 3 conditions: Without work, Available, Actively seeking[cite: 336]."
+            explanation: "Lecture 3, Slide 39: The 3 conditions: Without work, Available, Actively seeking."
         },
         {
             category: "Project Findings",
@@ -307,7 +307,7 @@
                 "Northern UK and Ireland"
             ],
             correct: 2,
-            [cite_start]explanation: "Slide 76: High-High clusters (core) are in Germany and Belgium[cite: 76]."
+            explanation: "Slide 76: High-High clusters (core) are in Germany and Belgium."
         },
         {
             category: "Indices",
@@ -319,7 +319,7 @@
                 "Bradford Index"
             ],
             correct: 1,
-            [cite_start]explanation: "Lecture 6, Slide 16: Laspeyres uses base period weights (q0)[cite: 462]."
+            explanation: "Lecture 6, Slide 16: Laspeyres uses base period weights (q0)."
         }
     ];
 
@@ -337,7 +337,7 @@
                 "GeoDa cannot calculate distance weights."
             ],
             correct: 1,
-            explanation: "Queen only looks at physical neighbors. [cite_start]Distance weights capture economic influence that 'jumps' borders (e.g., trade routes), which is a key limitation noted in slide 109[cite: 108]."
+            explanation: "Queen only looks at physical neighbors. Distance weights capture economic influence that 'jumps' borders (e.g., trade routes), which is a key limitation noted in slide 109."
         },
         {
             category: "Data Limitations",
@@ -349,7 +349,7 @@
                 "NUTS-1 regions do not align with national borders."
             ],
             correct: 1,
-            explanation: "Slide 107: 'NUTS-1 scale hides internal country differences'. [cite_start]Capital cities often have much higher GDP than the national average[cite: 107]."
+            explanation: "Slide 107: 'NUTS-1 scale hides internal country differences'. Capital cities often have much higher GDP than the national average."
         },
         {
             category: "Economic Interpretation",
@@ -361,7 +361,7 @@
                 "It means rich regions are becoming poorer."
             ],
             correct: 0,
-            explanation: "Slide 100: 'GDP is less spatially clustered than income'. [cite_start]Productivity shifts faster, but income (welfare) is smoothed by policy or remains sticky[cite: 100]."
+            explanation: "Slide 100: 'GDP is less spatially clustered than income'. Productivity shifts faster, but income (welfare) is smoothed by policy or remains sticky."
         },
         {
             category: "Statistical Validity",
@@ -373,7 +373,7 @@
                 "Blame the data source."
             ],
             correct: 1,
-            explanation: "Spatial autocorrelation values are often lower than standard correlations. [cite_start]0.33 with p=0.002 is statistically significant clustering[cite: 66, 68]."
+            explanation: "Spatial autocorrelation values are often lower than standard correlations. 0.33 with p=0.002 is statistically significant clustering."
         },
         {
             category: "Bivariate Analysis",
@@ -385,7 +385,7 @@
                 "It indicates a negative relationship."
             ],
             correct: 2,
-            explanation: "Moran's I measures association/clustering, not causality. [cite_start]Refer to Slide 82 regarding 'spillover effects' but be careful with the word 'cause'[cite: 82]."
+            explanation: "Moran's I measures association/clustering, not causality. Refer to Slide 82 regarding 'spillover effects' but be careful with the word 'cause'."
         },
         {
             category: "Map Interpretation",
@@ -397,7 +397,7 @@
                 "A data error."
             ],
             correct: 1,
-            explanation: "Lecture 4, Slide 29/Project Slide 78: High-Low means the region itself is High, but neighbors are Low. [cite_start]This often happens in transition zones[cite: 78]."
+            explanation: "Lecture 4, Slide 29/Project Slide 78: High-Low means the region itself is High, but neighbors are Low. This often happens in transition zones."
         },
         {
             category: "Data Choice",
@@ -409,7 +409,7 @@
                 "We flipped a coin."
             ],
             correct: 1,
-            [cite_start]explanation: "Lecture 6, Slide 18: PPS eliminates the effect of price level differences, making it the correct choice for welfare comparisons[cite: 635]."
+            explanation: "Lecture 6, Slide 18: PPS eliminates the effect of price level differences, making it the correct choice for welfare comparisons."
         },
         {
             category: "Trend Analysis",
@@ -421,7 +421,7 @@
                 "No, Moran's I measures the magnitude of GDP."
             ],
             correct: 1,
-            explanation: "Critical thinking: Moran's I measures *clustering*. Convergence measures *inequality gap*. [cite_start]While related, less clustering doesn't automatically guarantee the poor caught up to the rich; it just means the rich aren't as clumped together[cite: 61]."
+            explanation: "Critical thinking: Moran's I measures *clustering*. Convergence measures *inequality gap*. While related, less clustering doesn't automatically guarantee the poor caught up to the rich."
         },
         {
             category: "Methodology",
@@ -433,7 +433,7 @@
                 "Excel couldn't handle the raw numbers."
             ],
             correct: 1,
-            [cite_start]explanation: "Slide 47: Growth rate allows dynamic comparison of progress over time, essential for checking convergence[cite: 47]."
+            explanation: "Slide 47: Growth rate allows dynamic comparison of progress over time, essential for checking convergence."
         },
         {
             category: "Policy Implications",
@@ -445,7 +445,7 @@
                 "The UK."
             ],
             correct: 1,
-            [cite_start]explanation: "Slide 77 identifies Eastern/Southeastern Europe as the Low-Low periphery, which is the target for Cohesion Policy mentioned in Slide 14[cite: 77]."
+            explanation: "Slide 77 identifies Eastern/Southeastern Europe as the Low-Low periphery, which is the target for Cohesion Policy mentioned in Slide 14."
         },
         {
             category: "Anomalies",
@@ -457,7 +457,7 @@
                 "The software crashed."
             ],
             correct: 1,
-            [cite_start]explanation: "Lecture 4: 'Not Significant' means the spatial randomization test (999 permutations) did not find a pattern different from randomness[cite: 1374]."
+            explanation: "Lecture 4: 'Not Significant' means the spatial randomization test (999 permutations) did not find a pattern different from randomness."
         },
         {
             category: "Alternative Metrics",
@@ -469,7 +469,7 @@
                 "GDP per capita excludes commuters."
             ],
             correct: 1,
-            explanation: "Lecture 5, Slide 11/20: GVA is often used as a proxy for productivity. [cite_start]GDP per capita includes non-working population, which dilutes the productivity metric[cite: 603]."
+            explanation: "Lecture 5, Slide 11/20: GVA is often used as a proxy for productivity. GDP per capita includes non-working population, which dilutes the productivity metric."
         },
         {
             category: "Inflation Impact",
@@ -481,7 +481,7 @@
                 "Nominal data is always better than Real data."
             ],
             correct: 1,
-            explanation: "Lecture 6, Slide 17/19: Current prices are influenced by inflation. [cite_start]To see real economic convergence, you must account for price changes[cite: 623]."
+            explanation: "Lecture 6, Slide 17/19: Current prices are influenced by inflation. To see real economic convergence, you must account for price changes."
         },
         {
             category: "Spatial Weights",
@@ -505,7 +505,7 @@
                 "Outliers make the map look prettier."
             ],
             correct: 1,
-            explanation: "Standard statistical practice. [cite_start]Lecture 4 mentions Box Maps are used specifically to identify spatial outliers[cite: 1098]."
+            explanation: "Standard statistical practice. Lecture 4 mentions Box Maps are used specifically to identify spatial outliers."
         },
         {
             category: "Correlation vs Autocorrelation",
@@ -517,7 +517,7 @@
                 "Moran's I can be greater than 1."
             ],
             correct: 0,
-            [cite_start]explanation: "Lecture 4, Slide 12: Autocorrelation is correlation between values of the same variable (bi-directional among observations)[cite: 1058]."
+            explanation: "Lecture 4, Slide 12: Autocorrelation is correlation between values of the same variable (bi-directional among observations)."
         },
         {
             category: "Significance Testing",
@@ -529,7 +529,7 @@
                 "Significance doesn't matter in geography."
             ],
             correct: 2,
-            [cite_start]explanation: "Lecture 4, Slide 40: Lower p-values indicate higher statistical significance[cite: 1374]."
+            explanation: "Lecture 4, Slide 40: Lower p-values indicate higher statistical significance."
         },
         {
             category: "Cross-Border Issues",
@@ -541,7 +541,7 @@
                 "It is a glitch in the shapefile."
             ],
             correct: 1,
-            [cite_start]explanation: "Project Slide 78: 'outliers near borders -> transition/disparity zones'[cite: 78]."
+            explanation: "Project Slide 78: 'outliers near borders -> transition/disparity zones'."
         },
         {
             category: "Dataset Selection",
@@ -565,7 +565,7 @@
                 "We just guessed."
             ],
             correct: 1,
-            [cite_start]explanation: "Slide 100: 'GDP is less spatially clustered than income... productivity shifts faster than household welfare'[cite: 100]."
+            explanation: "Slide 100: 'GDP is less spatially clustered than income... productivity shifts faster than household welfare'."
         }
     ];
 
@@ -596,13 +596,13 @@
         if (mode === 'practice') {
             quizTitle.innerText = "Practice Quiz";
             quizTitle.style.color = "var(--primary)";
-            // Shuffle and pick all practice questions
-            currentQuestions = practiceQuestions.sort(() => Math.random() - 0.5);
+            // Shuffle and pick practice questions (creates a copy of the array)
+            currentQuestions = [...practiceQuestions].sort(() => Math.random() - 0.5);
         } else {
             quizTitle.innerText = "🛡️ Defense Simulation";
             quizTitle.style.color = "var(--warning)";
-            // Use defense questions
-            currentQuestions = defenseQuestions.sort(() => Math.random() - 0.5);
+            // Use defense questions (creates a copy of the array)
+            currentQuestions = [...defenseQuestions].sort(() => Math.random() - 0.5);
         }
 
         currentQuestionIndex = 0;
